@@ -7,5 +7,5 @@ cache:
   directories:
     - 'node_modules'
 script:
-  - npm test:cov
-  - npm test:e2e
+  - npm run test:cov
+  - npm run test:e2e
