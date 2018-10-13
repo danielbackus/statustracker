@@ -6,7 +6,6 @@ node_js:
 cache:
   directories:
     - 'node_modules'
-before_install: npm i -g npm@latest
 script:
   - npm test:cov
   - npm test:e2e
