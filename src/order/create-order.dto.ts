@@ -17,20 +17,20 @@ export class CreateOrderDto {
   readonly storeNumber: string;
 
   @Allow()
-  readonly customerName: string;
+  readonly customerName?: string;
 
   @Allow()
-  readonly status: string;
+  readonly status?: string;
 
   @Allow()
-  readonly orderDate: Date;
+  readonly orderDate?: Date;
 
   @Allow()
-  readonly shipDate: Date;
+  readonly shipDate?: Date;
 
   @Allow()
-  readonly shippingCarrier: string;
+  readonly shippingCarrier?: string;
 
   @Allow()
-  readonly estimatedDeliveryDate: Date;
+  readonly estimatedDeliveryDate?: Date;
 }
