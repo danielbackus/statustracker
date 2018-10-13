@@ -9,7 +9,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Order } from './order.entity';
 import { CreateOrderDto } from './create-order.dto';
-import { validate, ValidationError } from 'class-validator';
 
 @Injectable()
 export class OrderService {
