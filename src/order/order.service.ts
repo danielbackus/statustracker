@@ -10,8 +10,7 @@ export class OrderService {
     @InjectRepository(Order) private readonly orderRepository: OrderRepository,
   ) {}
 
-  @Post()
-  async create(@Body() request: CreateOrderDto): Promise<Order> {
+  async create(request: CreateOrderDto): Promise<Order> {
     const order: Order = await this.orderRepository.create(request);
     return await this.orderRepository.save(order);
   }
