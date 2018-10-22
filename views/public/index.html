@@ -4,10 +4,54 @@
 <head>
     <meta charset="utf-8">
     <title>Status Tracker</title>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans|Roboto" rel="stylesheet">
+    <link rel="stylesheet" href="./css/app.css" />
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src="./js/app.js"></script>
 </head>
 
 <body>
-    <p>Hello world!</p>
+    <div id="app" class="grid-container">
+        <div class="header">
+            <h2>Order Status Tracker</h2>
+        </div>
+        <div class="sidebar">
+            <ul>
+                <a href="/">
+                    <li>Get Order Status</li>
+                </a>
+                <a href="/login">
+                    <li>Admin Login</li>
+                </a>
+            </ul>
+        </div>
+        <div class="content">
+            <p>
+                <strong>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</strong> Aenean commodo sodales
+                turpis, ac posuere odio tempor sodales. Morbi id euismod mauris. Curabitur vel leo maximus, vehicula
+                nunc at, lobortis dolor. Nullam a nisl congue, consectetur risus quis, tincidunt leo. Vestibulum
+                commodo dui at rhoncus finibus.
+                Nam sed enim sed lectus lacinia imperdiet interdum nec nisl. Aenean sed orci elementum, finibus tortor
+                in, posuere lacus. <em>In a turpis neque.</em> Maecenas ultrices vehicula elit id suscipit. Donec at
+                dictum
+                tellus.
+            </p>
+            <hr />
+            <form id="orderForm" action="">
+                <label for="orderNumber">Purchase Order Number</label>
+                <input type="text" id="formOrderNumber">
+                <label for="storeNumber">Store Number</label>
+                <input type="text" id="formStoreNumber" />
+            </form>
+            <button><span>Find</span></button>
+            <div id="orderStatus">
+
+            </div>
+        </div>
+        <div class="footer">
+            <p>&copy; 2018</p>
+        </div>
+    </div>
 </body>
 
 </html>
