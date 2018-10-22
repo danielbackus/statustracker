@@ -13,7 +13,7 @@ describe('Order Controller', () => {
   beforeAll(async () => {
     module = await Test.createTestingModule({
       controllers: [OrderController],
-      components: [
+      providers: [
         { provide: 'OrderRepository', useClass: Repository },
         OrderService,
       ],
