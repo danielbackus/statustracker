@@ -1,19 +1,50 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
-import { OrderService } from './order.service';
-import { CreateOrderDto } from './create-order.dto';
+import {
+  Controller,
+  Get,
+  Query,
+  BadRequestException,
+  UseGuards,
+  Post,
+  UseInterceptors,
+  FileInterceptor,
+  UploadedFile,
+  ServiceUnavailableException,
+} from '@nestjs/common';
 import { Order } from './order.entity';
+import { OrderService } from './order.service';
+import { AuthGuard } from '@nestjs/passport';
 
-@Controller('order')
+@Controller('api/order')
 export class OrderController {
+  private locked: boolean = false;
+
   constructor(private readonly orderService: OrderService) {}
 
-  @Post()
-  async create(@Body() request: CreateOrderDto): Promise<Order> {
-    return await this.orderService.create(request);
+  @Get()
+  async findByOrderNumber(@Query() params): Promise<Order[]> {
+    if (this.locked) throw new ServiceUnavailableException();
+    const { orderNumber, storeNumber } = params;
+    if (!orderNumber) throw new BadRequestException();
+    const orders: Order[] = await this.orderService.findByOrderAndStore(
+      orderNumber,
+      storeNumber,
+    );
+    return orders;
   }
 
-  @Get()
-  async findAll() {
-    return await this.orderService.findAll();
+  @Post('upload')
+  @UseGuards(AuthGuard())
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadFile(@UploadedFile() file: object): Promise<void> {
+    if (this.locked) throw new ServiceUnavailableException();
+    this.locked = true;
+    try {
+      await this.orderService.handleUpload(file);
+    } catch (e) {
+      throw new BadRequestException();
+    } finally {
+      this.locked = false;
+    }
+    return;
   }
 }

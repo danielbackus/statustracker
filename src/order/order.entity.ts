@@ -1,4 +1,9 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+} from 'typeorm';
 
 @Entity()
 export class Order {
@@ -11,21 +16,9 @@ export class Order {
   @Column('text')
   storeNumber: string;
 
-  @Column('text', { nullable: true })
-  customerName: string;
-
-  @Column('text', { nullable: true })
-  status: string;
-
   @Column('date', { nullable: true })
-  orderDate: Date;
+  eta: Date;
 
-  @Column('date', { nullable: true })
-  shipDate: Date;
-
-  @Column('text', { nullable: true })
-  shippingCarrier: string;
-
-  @Column('date', { nullable: true })
-  estimatedDeliveryDate: Date;
+  @CreateDateColumn()
+  created: Date;
 }
