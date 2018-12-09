@@ -66,6 +66,7 @@
     "@types/uuid": "^3.4.4",
     "babel-plugin-transform-custom-element-classes": "^0.1.0",
     "babel-plugin-transform-es2015-classes": "^6.24.1",
+    "coveralls": "^3.0.2",
     "jest": "^23.5.0",
     "nodemon": "^1.18.3",
     "prettier": "^1.14.2",
