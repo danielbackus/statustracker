@@ -21,7 +21,6 @@ export class OrderService {
   }
 
   async handleUpload(file) {
-    console.log({ file });
     await this.orderRepository.delete({});
 
     const readable = new Readable();
