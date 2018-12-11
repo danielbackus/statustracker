@@ -20,6 +20,14 @@ export class OrderController {
 
   constructor(private readonly orderService: OrderService) {}
 
+  lock(): void {
+    this.locked = true;
+  }
+
+  unlock(): void {
+    this.locked = false;
+  }
+
   @Get()
   async findByOrderNumber(@Query() params): Promise<Order[]> {
     if (this.locked) throw new ServiceUnavailableException();
