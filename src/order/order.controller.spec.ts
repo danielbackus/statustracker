@@ -1,25 +1,25 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { OrderController } from './order.controller';
 import { OrderService } from './order.service';
-import { OrderRepository } from './order.repository';
 import {
   ServiceUnavailableException,
   BadRequestException,
 } from '@nestjs/common';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { Order } from './order.entity';
 
 describe('Order Controller', () => {
   let module: TestingModule;
   beforeAll(async () => {
     module = await Test.createTestingModule({
       controllers: [OrderController],
-      providers: [
-        OrderService,
-        {
-          provide: 'OrderRepository',
-          useClass: OrderRepository,
-        },
-      ],
-    }).compile();
+      providers: [OrderService],
+    })
+      .overrideProvider(getRepositoryToken(Order))
+      .useValue({
+        find: () => [],
+      })
+      .compile();
   });
   afterEach(async () => {
     module.get<OrderController>(OrderController).unlock();
@@ -58,18 +58,39 @@ describe('Order Controller', () => {
       expect(e).toBeInstanceOf(BadRequestException);
     }
   });
-  xit('findByOrder() should return an array of orders', async () => {});
-  it('uploadFile() should throw with bad params', async () => {
+  it('findByOrder() should call service.findByOrder...() & return an array of orders', async () => {
     const controller: OrderController = module.get<OrderController>(
       OrderController,
     );
     const service: OrderService = module.get<OrderService>(OrderService);
+    const fn = jest.spyOn(service, 'findByOrderAndStore');
+    await controller.findByOrderNumber({
+      orderNumber: 1,
+      storeNumber: 1,
+    });
+    expect(fn).toBeCalled();
+  });
+  it('uploadFile() should throw with bad params', async () => {
+    const controller: OrderController = module.get<OrderController>(
+      OrderController,
+    );
     try {
-      const fn = jest.spyOn(service, 'findByOrderAndStore');
       await controller.uploadFile({});
     } catch (e) {
       expect(e).toBeInstanceOf(BadRequestException);
     }
   });
-  xit('uploadFile() should return', async () => {});
+  it('uploadFile() should call', async () => {
+    const controller: OrderController = module.get<OrderController>(
+      OrderController,
+    );
+    const service: OrderService = module.get<OrderService>(OrderService);
+    const fn = jest.spyOn(service, 'handleUpload');
+    try {
+      await controller.uploadFile({});
+    } catch (e) {
+      expect(e).toBeInstanceOf(BadRequestException);
+    }
+    expect(fn).toBeCalled();
+  });
 });
