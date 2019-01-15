@@ -393,3 +393,6 @@ dist
 
 # Database files
 *.sqlite
+
+# Babelified client js files
+views/public/js

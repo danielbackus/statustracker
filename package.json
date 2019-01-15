@@ -7,7 +7,7 @@
   "scripts": {
     "build": "npx babel views/public/src --out-dir views/public/js",
     "format": "prettier --write \"src/**/*.ts\"",
-    "start": "ts-node -r tsconfig-paths/register src/main.ts",
+    "start": "npm run build && ts-node -r tsconfig-paths/register src/main.ts",
     "start:dev": "npm run build && nodemon",
     "start:debug": "nodemon --config nodemon-debug.json",
     "prestart:prod": "rimraf dist && tsc && npm run build",

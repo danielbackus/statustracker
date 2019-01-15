@@ -13,4 +13,5 @@ This is a work in progress that will continue to develop.
 
 ```sh
 npm install
+npm run build
 ```
