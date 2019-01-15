@@ -47,10 +47,10 @@ export class UserService {
     throw new UnauthorizedException();
   }
 
-  notExpired(user: User): boolean {
+  notExpired(timestamp: Date): boolean {
     const d = new Date();
     d.setHours(d.getHours() - 1);
-    return user.updated > d;
+    return timestamp > d;
   }
 
   async create(request: CreateUserDto) {
@@ -74,13 +74,11 @@ export class UserService {
   }
 
   async invite(request: InviteDto) {
-    console.log({ request });
     const exists: Invite = await this.userRepository.findOne({
       email: request.email,
     });
     if (exists) return;
     const old = await this.inviteRepository.findOne({ email: request.email });
-    console.log({ old });
     if (old) await this.inviteRepository.remove(old);
     const creator: User = await this.userRepository.findOne(request.creator);
     const invite: Invite = await this.inviteRepository.create({
