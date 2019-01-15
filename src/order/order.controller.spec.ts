@@ -10,6 +10,8 @@ import { Order } from './order.entity';
 
 describe('Order Controller', () => {
   let module: TestingModule;
+  let controller: OrderController;
+  let service: OrderService;
   beforeAll(async () => {
     module = await Test.createTestingModule({
       controllers: [OrderController],
@@ -20,20 +22,13 @@ describe('Order Controller', () => {
         find: () => [],
       })
       .compile();
+    controller = module.get<OrderController>(OrderController);
+    service = module.get<OrderService>(OrderService);
   });
   afterEach(async () => {
     module.get<OrderController>(OrderController).unlock();
   });
-  it('should be defined', () => {
-    const controller: OrderController = module.get<OrderController>(
-      OrderController,
-    );
-    expect(controller).toBeDefined();
-  });
   it('should always throw when locked', async () => {
-    const controller: OrderController = module.get<OrderController>(
-      OrderController,
-    );
     controller.lock();
     try {
       await controller.findByOrderNumber({});
@@ -47,10 +42,6 @@ describe('Order Controller', () => {
     }
   });
   it('findByOrder() should throw with bad params', async () => {
-    const controller: OrderController = module.get<OrderController>(
-      OrderController,
-    );
-    const service: OrderService = module.get<OrderService>(OrderService);
     try {
       const fn = jest.spyOn(service, 'findByOrderAndStore');
       await controller.findByOrderNumber({});
@@ -59,10 +50,6 @@ describe('Order Controller', () => {
     }
   });
   it('findByOrder() should call service.findByOrder...() & return an array of orders', async () => {
-    const controller: OrderController = module.get<OrderController>(
-      OrderController,
-    );
-    const service: OrderService = module.get<OrderService>(OrderService);
     const fn = jest.spyOn(service, 'findByOrderAndStore');
     await controller.findByOrderNumber({
       orderNumber: 1,
@@ -71,9 +58,6 @@ describe('Order Controller', () => {
     expect(fn).toBeCalled();
   });
   it('uploadFile() should throw with bad params', async () => {
-    const controller: OrderController = module.get<OrderController>(
-      OrderController,
-    );
     try {
       await controller.uploadFile({});
     } catch (e) {
@@ -81,10 +65,6 @@ describe('Order Controller', () => {
     }
   });
   it('uploadFile() should call', async () => {
-    const controller: OrderController = module.get<OrderController>(
-      OrderController,
-    );
-    const service: OrderService = module.get<OrderService>(OrderService);
     const fn = jest.spyOn(service, 'handleUpload');
     try {
       await controller.uploadFile({});

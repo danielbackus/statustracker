@@ -1,7 +1,4 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { getRepository } from 'typeorm';
 import { OrderRepository } from './order.repository';
-import { Order } from './order.entity';
 
 describe('OrderRepository', () => {
   let repo: OrderRepository;
