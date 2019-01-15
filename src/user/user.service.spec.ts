@@ -2,9 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserService } from './user.service';
 import { InviteRepository } from './invite.repository';
 import { UserRepository } from './user.repository';
-import { UnauthorizedException } from '@nestjs/common';
+import { UnauthorizedException, BadRequestException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import * as mail from '@sendgrid/mail';
 
 describe('UserService', () => {
   let module: TestingModule;
@@ -42,18 +41,22 @@ describe('UserService', () => {
   });
   it('login should function', async () => {
     const password = await bcrypt.hash('foo', 1);
-    userRepo.findOne = jest.fn().mockResolvedValueOnce({
+    const user = {
       id: 1,
       email: 'foo@foo.com',
       active: true,
       password,
-    });
+      bearer: 'bar',
+    };
+    userRepo.findOne = jest.fn(() => user);
     userRepo.save = jest.fn(() => {});
     const response = await service.login({
       email: 'foo@foo.com',
       password: 'foo',
     });
+    expect(userRepo.save).toBeCalled();
     expect(response.id).toEqual(1);
+    expect(response.bearer).not.toEqual('bar');
   });
   it('notExpired should return correctly', () => {
     const valid = new Date();
@@ -78,6 +81,7 @@ describe('UserService', () => {
       password: 'foo',
       invite: 'baz',
     });
+    expect(userRepo.create).toBeCalled();
     expect(userRepo.save).toBeCalled();
     expect(inviteRepo.delete).toBeCalled();
   });
@@ -88,5 +92,74 @@ describe('UserService', () => {
     } catch (e) {
       expect(e).toBeInstanceOf(UnauthorizedException);
     }
+  });
+  it.skip('sendInvite should call mail.send', () => {});
+  it('forgotPassword should throw without email', async () => {
+    try {
+      await service.forgotPassword(null);
+    } catch (e) {
+      expect(e).toBeInstanceOf(BadRequestException);
+    }
+  });
+  it('forgotPassword should do nothing if no user', async () => {
+    userRepo.findOne = jest.fn().mockReturnValueOnce(null);
+    service.sendForgot = jest.fn();
+    try {
+      await service.forgotPassword('bad@bad.com');
+    } catch (e) {
+      expect(e).not.toBeDefined();
+    } finally {
+      expect(service.sendForgot).not.toBeCalled();
+    }
+  });
+  it('forgotPassword should set reset token, save, & call sendForgot', async () => {
+    const user = {
+      email: 'foo@foo.com',
+      reset: null,
+    };
+    userRepo.findOne = jest.fn().mockReturnValueOnce(user);
+    userRepo.save = jest.fn();
+    service.sendForgot = jest.fn();
+    await service.forgotPassword(user.email);
+    expect(userRepo.save).toBeCalledWith(
+      expect.objectContaining({ email: 'foo@foo.com' }),
+    );
+    expect(service.sendForgot).toBeCalledWith(
+      expect.objectContaining({ email: 'foo@foo.com' }),
+    );
+    expect(service.sendForgot).not.toBeCalledWith(
+      expect.objectContaining({ reset: null }),
+    );
+  });
+  it('getByReset should return null if no user', async () => {
+    userRepo.findOne = jest.fn(() => null);
+    const user = await service.getByReset('bad');
+    expect(userRepo.findOne).toBeCalled();
+    expect(user).toBeUndefined();
+  });
+  it('getByReset should return user', async () => {
+    const user = {
+      email: 'foo@foo.com',
+      id: 1,
+      reset: 'foo',
+    };
+    userRepo.findOne = jest.fn(() => user);
+    const user2 = await service.getByReset(user.reset);
+    expect(user2['email']).toEqual(user.email);
+    expect(user2['id']).toEqual(user.id);
+  });
+  it('getInvite should throw if no invite', async () => {
+    inviteRepo.findOne = jest.fn(() => null);
+    try {
+      await service.getInvite('bad');
+    } catch (e) {
+      expect(e).toBeInstanceOf(UnauthorizedException);
+    }
+  });
+  it('getInvite should return corresponding email', async () => {
+    const invite = { email: 'foo@foo.com' };
+    inviteRepo.findOne = jest.fn(() => invite);
+    const email = await service.getInvite('1');
+    expect(email).toEqual(invite.email);
   });
 });

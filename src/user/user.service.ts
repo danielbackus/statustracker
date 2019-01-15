@@ -162,7 +162,7 @@ export class UserService {
 
   async getByReset(reset: string): Promise<object> {
     const user: User = await this.userRepository.findOne({ reset });
-    if (!user) throw new BadRequestException();
+    if (!user) return;
     return { id: user.id, email: user.email };
   }
 
